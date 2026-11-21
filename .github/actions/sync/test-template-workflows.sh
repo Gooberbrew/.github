@@ -65,10 +65,10 @@ assert_issue() {
   cmp "${GITHUB_OUTPUT}" <(printf 'complete_template=%s\n' "$3")
 }
 
-crash_report=$'<summary>Automatic crash report</summary>\nHomebrew.app crash report'
-for repository in BrewUI brew homebrew-core homebrew-cask
+crash_report=$'<summary>Automatic crash report</summary>\nGooberbrew.app crash report'
+for repository in BrewUI brew gooberbrew-core gooberbrew-cask
 do
-  export GITHUB_REPOSITORY="Homebrew/${repository}"
+  export GITHUB_REPOSITORY="Gooberbrew/${repository}"
   printf 'Checking templates and crash reports for %s\n' "${GITHUB_REPOSITORY}"
   rm -f "${workdir}/check-issues/templates/"*.yml
   run_step check-issues 'Fetch issue templates'
@@ -76,21 +76,21 @@ do
   if [[ "${repository}" == BrewUI ]]
   then
     [[ "${#templates[@]}" == 1 ]]
-    test -f "${workdir}/check-issues/templates/Homebrew-BrewUI-bug.yml"
-    assert_issue 'Crash: Homebrew.app' "${crash_report}" true
+    test -f "${workdir}/check-issues/templates/Gooberbrew-BrewUI-bug.yml"
+    assert_issue 'Crash: Gooberbrew.app' "${crash_report}" true
     assert_issue 'Ordinary issue' "${crash_report}" false
-    assert_issue 'Crash: Homebrew.app' '<summary>Automatic crash report</summary>' false
-    assert_issue 'Crash: Homebrew.app' 'Homebrew.app crash report' false
-    assert_issue 'Ordinary issue' 'Homebrew/brew details' false
+    assert_issue 'Crash: Gooberbrew.app' '<summary>Automatic crash report</summary>' false
+    assert_issue 'Crash: Gooberbrew.app' 'Gooberbrew.app crash report' false
+    assert_issue 'Ordinary issue' 'Gooberbrew/brew details' false
   else
     [[ "${#templates[@]}" == 3 ]]
-    for sibling in brew homebrew-core homebrew-cask
+    for sibling in brew gooberbrew-core gooberbrew-cask
     do
-      test -f "${workdir}/check-issues/templates/Homebrew-${sibling}-bug.yml"
-      assert_issue 'Transferred issue' "Homebrew/${sibling} details" true
+      test -f "${workdir}/check-issues/templates/Gooberbrew-${sibling}-bug.yml"
+      assert_issue 'Transferred issue' "Gooberbrew/${sibling} details" true
     done
-    assert_issue 'Crash: Homebrew.app' "${crash_report}" false
-    assert_issue 'Ordinary issue' 'Homebrew/BrewUI details' false
+    assert_issue 'Crash: Gooberbrew.app' "${crash_report}" false
+    assert_issue 'Ordinary issue' 'Gooberbrew/BrewUI details' false
   fi
   assert_issue 'Ordinary issue' "${GITHUB_REPOSITORY} details" true
   assert_issue 'Ordinary issue' 'Incomplete body' false
@@ -117,7 +117,7 @@ ruby -rjson -ryaml <<'RUBY'
 %w[check-issues check-prs].each do |workflow|
   job = YAML.load_file(".github/workflows/#{workflow}.yml").fetch("jobs").fetch("manage")
   repositories = JSON.parse(job.fetch("if").match(/fromJSON\('([^']+)'\)/)[1])
-  abort "#{workflow} excludes BrewUI" unless repositories.include?("Homebrew/BrewUI")
+  abort "#{workflow} excludes BrewUI" unless repositories.include?("Gooberbrew/BrewUI")
   steps = job.fetch("steps")
   comments = steps.find { |step| step["id"] == "comments" }
   abort "#{workflow} skips comment cleanup for open, complete submissions" if comments.key?("if")
