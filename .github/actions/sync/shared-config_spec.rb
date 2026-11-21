@@ -109,7 +109,7 @@ module SharedConfigHelpers
         .replace(/^import \{ defineConfig \} from "@coderabbitai\/config"\n/m, "")
         .replace("export default ", "globalThis.config = "), sandbox);
 
-      for (const fullName of ["Homebrew/advisory-database", "homebrew/advisory-database", "Homebrew/other"]) {
+      for (const fullName of ["Gooberbrew/advisory-database", "gooberbrew/advisory-database", "Gooberbrew/other"]) {
         for (const author of ["p-linnane", "P-Linnane", "P-LINNANE", "someone-else", null]) {
           const config = sandbox.config({ repo: { fullName }, pr: author === null ? null : { author } });
           const expected = optedIn && author !== null && author.toLowerCase() === "p-linnane";
@@ -166,11 +166,11 @@ RSpec.describe "shared configuration sync" do
   let(:own_codeowners) do
     entries = codeowners_template.lines.reject { |line| line.start_with?("#") }
                                  .map { |line| "#{line.chomp} @MikeMcQuaid\n" }.join
-    "docs/Support-Tiers.md  @Homebrew/lead-maintainers @MikeMcQuaid\n#{entries}"
+    "docs/Support-Tiers.md  @Gooberbrew/lead-maintainers @MikeMcQuaid\n#{entries}"
   end
   let(:incomplete_codeowners) do
     entries = own_codeowners.lines.reject { |line| line.include?("coderabbit*") }.join
-    "#{entries}/.coderabbit*  @Homebrew/maintainers\n"
+    "#{entries}/.coderabbit*  @Gooberbrew/maintainers\n"
   end
   let(:pull_request_template) { ".github/PULL_REQUEST_TEMPLATE.md" }
   let(:expected_templates) do
@@ -180,7 +180,7 @@ RSpec.describe "shared configuration sync" do
       ".github/ISSUE_TEMPLATE/config.yml" => "issue_config.template.yml",
     }.transform_values do |source|
       format((source_repository/".github/actions/sync/#{source}").read,
-             repository: "Homebrew/#{File.basename(repository)}")
+             repository: "Gooberbrew/#{File.basename(repository)}")
     end
   end
   let(:issue_templates) { expected_templates.keys - [pull_request_template] }
@@ -256,7 +256,7 @@ RSpec.describe "shared configuration sync" do
 
     it "replaces custom CodeRabbit and outdated synced CODEOWNERS, then makes no further commits" do
       write coderabbit_config, "export default { inheritance: false }\n"
-      write codeowners, "#{sync_header}* @Homebrew/maintainers\n"
+      write codeowners, "#{sync_header}* @Gooberbrew/maintainers\n"
       commit_fixture
       sync_target
       expect_coderabbit_config(opted_in: true)
@@ -277,12 +277,12 @@ RSpec.describe "shared configuration sync" do
     end
   end
 
-  %w[brew homebrew-core homebrew-cask private .github].each do |name|
+  %w[brew gooberbrew-core gooberbrew-cask private .github].each do |name|
     context "with CodeRabbit excluded for #{name}" do
       let(:repository) { "coderabbit-excluded/#{name}" }
 
       it "does not install shared files or overwrite existing configuration" do
-        custom_codeowners = ".coderabbit.config.ts @Homebrew/lead-maintainers\n"
+        custom_codeowners = ".coderabbit.config.ts @Gooberbrew/lead-maintainers\n"
         custom_config = "export default { reviews: { request_changes_workflow: false } }\n"
         write "CODEOWNERS", custom_codeowners
         commit_fixture
@@ -319,8 +319,8 @@ RSpec.describe "shared configuration sync" do
         write path, incomplete_codeowners
         commit_fixture
         expect_sync_failure("#{path} is missing these entries",
-                            "/.coderabbit*  @Homebrew/lead-maintainers",
-                            "/coderabbit*   @Homebrew/lead-maintainers")
+                            "/.coderabbit*  @Gooberbrew/lead-maintainers",
+                            "/coderabbit*   @Gooberbrew/lead-maintainers")
         expect((target/path).read).to eq(incomplete_codeowners)
       end
     end
@@ -342,8 +342,8 @@ RSpec.describe "shared configuration sync" do
     commit_fixture
     sync_target
     expected_templates.each { |path, contents| expect((target/path).read).to eq(contents) }
-    expect((target/pull_request_template).read).to include("https://github.com/Homebrew/no-ruby/pulls")
-    expect((target/".github/ISSUE_TEMPLATE/bug.yml").read).to include("https://github.com/Homebrew/no-ruby/issues")
+    expect((target/pull_request_template).read).to include("https://github.com/Gooberbrew/no-ruby/pulls")
+    expect((target/".github/ISSUE_TEMPLATE/bug.yml").read).to include("https://github.com/Gooberbrew/no-ruby/issues")
     expect_idempotent_sync
   end
 
@@ -537,7 +537,7 @@ RSpec.describe "shared configuration sync" do
   end
 
   it "preserves a Ruby version newer than Portable Ruby" do
-    portable_version = (brew_repository/"Library/Homebrew/vendor/portable-ruby-version").read
+    portable_version = (brew_repository/"Library/Gooberbrew/vendor/portable-ruby-version").read
     newer_version = "#{portable_version.split(".").first.to_i + 1}.0.0\n"
     write ".ruby-version", newer_version
     write "example.rb"
@@ -553,7 +553,7 @@ RSpec.describe "shared configuration sync" do
 
     it "keeps newer pins per repository and takes newer source pins, repeatedly" do
       workflow = ".github/workflows/actionlint.yml"
-      newer = repin(synced_contents(workflow), "Homebrew/actions", newer_sha, newer_version)
+      newer = repin(synced_contents(workflow), "Gooberbrew/actions", newer_sha, newer_version)
       write workflow, repin(newer, "actions/checkout", "b" * 40, "v1.0.0")
       commit_fixture
       sync_target
@@ -567,7 +567,7 @@ RSpec.describe "shared configuration sync" do
       commit_fixture
       sync_target
       synced = (target/workflow).read
-      newer = repin(synced, "Homebrew/actions", newer_sha, newer_version)
+      newer = repin(synced, "Gooberbrew/actions", newer_sha, newer_version)
       expect(newer).not_to eq(synced)
       write workflow, newer
       commit_fixture
@@ -578,7 +578,7 @@ RSpec.describe "shared configuration sync" do
 
     it "ignores pins without a comparable version" do
       workflow = ".github/workflows/actionlint.yml"
-      write workflow, repin(synced_contents(workflow), "Homebrew/actions", newer_sha, "main")
+      write workflow, repin(synced_contents(workflow), "Gooberbrew/actions", newer_sha, "main")
       commit_fixture
       sync_target
       expect((target/workflow).read).to eq(synced_contents(workflow))
@@ -587,7 +587,7 @@ RSpec.describe "shared configuration sync" do
     it "ignores commented-out pins" do
       workflow = ".github/workflows/actionlint.yml"
       synced = synced_contents(workflow)
-      write workflow, "#{synced}# uses: Homebrew/actions/setup-homebrew@#{newer_sha} # #{newer_version}\n"
+      write workflow, "#{synced}# uses: Gooberbrew/actions/setup-gooberbrew@#{newer_sha} # #{newer_version}\n"
       commit_fixture
       sync_target
       expect((target/workflow).read).to eq(synced)
@@ -595,8 +595,8 @@ RSpec.describe "shared configuration sync" do
 
     it "keeps newer quoted and differently spaced pins" do
       workflow = ".github/workflows/actionlint.yml"
-      newer = repin(synced_contents(workflow), "Homebrew/actions", newer_sha, newer_version)
-      write workflow, newer.gsub(%r{uses: (Homebrew/actions/\S+@\h{40})}, "uses:  '\\1'")
+      newer = repin(synced_contents(workflow), "Gooberbrew/actions", newer_sha, newer_version)
+      write workflow, newer.gsub(%r{uses: (Gooberbrew/actions/\S+@\h{40})}, "uses:  '\\1'")
       commit_fixture
       sync_target
       expect((target/workflow).read).to eq(newer)
@@ -683,7 +683,7 @@ RSpec.describe "shared configuration sync" do
     let(:repository) { "brew-with-lockfiles/brew" }
 
     it "updates only the docs lockfile" do
-      %w[Gemfile.lock Library/Homebrew/Gemfile.lock docs/Gemfile.lock].each { |path| write path }
+      %w[Gemfile.lock Library/Gooberbrew/Gemfile.lock docs/Gemfile.lock].each { |path| write path }
       commit_fixture
       sync_target
       expect_bundle_update
@@ -754,7 +754,7 @@ RSpec.describe "shared configuration sync" do
     end
   end
 
-  %w[brew homebrew-core homebrew-cask BrewUI no-template-checks].each do |name|
+  %w[brew gooberbrew-core gooberbrew-cask BrewUI no-template-checks].each do |name|
     context "with template workflows in #{name}" do
       let(:repository) { name }
 
