@@ -222,8 +222,8 @@ Dir.mktmpdir("pr-descriptions") do |workdir|
   state = run_workflow.call(template, previous: state)
   assert.call(state["state"] == "closed" && reminders.call(state).empty?, "A maintainer closure was overridden")
 
-  %w[brew homebrew-core homebrew-cask BrewUI].each do |repository|
-    repo = "Homebrew/#{repository}"
+  %w[brew gooberbrew-core gooberbrew-cask BrewUI].each do |repository|
+    repo = "Gooberbrew/#{repository}"
     state = run_workflow.call(template, repository: repo)
     assert.call(reminders.call(state).length == 1, "#{repo} did not get a reminder")
     state = run_workflow.call("Reverts #{repo}#123", title: 'Revert "Fix formula bug"', repository: repo)
@@ -235,13 +235,13 @@ Dir.mktmpdir("pr-descriptions") do |workdir|
     "Created with `brew bump-cask-pr`",
     "Created by https://github.com/mislav/bump-homebrew-formula-action",
   ]
-  %w[homebrew-core homebrew-cask].each do |repository|
+  %w[gooberbrew-core gooberbrew-cask].each do |repository|
     bump_bodies.each do |body|
-      state = run_workflow.call(body, repository: "Homebrew/#{repository}")
+      state = run_workflow.call(body, repository: "Gooberbrew/#{repository}")
       assert.call(state["state"] == "open" && state["mutations"].empty?, "A recognized bump PR was changed")
     end
-    state = run_workflow.call(template, repository: "Homebrew/#{repository}")
-    state = run_workflow.call(bump_bodies.first, repository: "Homebrew/#{repository}", previous: state)
+    state = run_workflow.call(template, repository: "Gooberbrew/#{repository}")
+    state = run_workflow.call(bump_bodies.first, repository: "Gooberbrew/#{repository}", previous: state)
     assert.call(state["state"] == "open" && state["comments"].empty?,
                 "A recognized bump description did not resolve the reminder")
     assert.call(state["mutations"].map(&:first) == ["DELETE"], "Resolving a bump reminder changed PR state")
