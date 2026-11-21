@@ -6,7 +6,7 @@ require "fileutils"
 require "find"
 require "json"
 require "open3"
-# Required when this script runs outside the Homebrew style environment.
+# Required when this script runs outside the Gooberbrew style environment.
 # rubocop:disable Lint/RedundantRequireStatement
 require "pathname"
 # rubocop:enable Lint/RedundantRequireStatement
@@ -67,14 +67,14 @@ end
 # rubocop:enable Style/TopLevelMethodDefinition
 
 if ARGV[0].to_s.empty? || ARGV[1].to_s.empty? || ARGV[4]
-  abort "Usage: #{$PROGRAM_NAME} <target_directory_path> <homebrew_repository_path> " \
+  abort "Usage: #{$PROGRAM_NAME} <target_directory_path> <gooberbrew_repository_path> " \
         "[brewsh_repository_path] [private_repository_path]"
 end
 
 target_directory = ARGV.fetch(0)
 target_directory_path = Pathname(target_directory).expand_path
 repository_name = target_directory_path.basename.to_s
-homebrew_repository_path = Pathname(ARGV.fetch(1)).expand_path
+gooberbrew_repository_path = Pathname(ARGV.fetch(1)).expand_path
 
 brewsh_repository = ARGV.fetch(2, "")
 brewsh_repository_path = Pathname(brewsh_repository).expand_path unless brewsh_repository.empty?
@@ -82,8 +82,8 @@ brewsh_repository_path = Pathname(brewsh_repository).expand_path unless brewsh_r
 private_repository = ARGV.fetch(3, "")
 private_repository_path = Pathname(private_repository).expand_path unless private_repository.empty?
 
-if !target_directory_path.directory? || !homebrew_repository_path.directory?
-  abort "Usage: #{$PROGRAM_NAME} <target_directory_path> <homebrew_repository_path> " \
+if !target_directory_path.directory? || !gooberbrew_repository_path.directory?
+  abort "Usage: #{$PROGRAM_NAME} <target_directory_path> <gooberbrew_repository_path> " \
         "[brewsh_repository_path] [private_repository_path]"
 end
 abort "#{brewsh_repository_path} is not a directory" if brewsh_repository_path && !brewsh_repository_path.directory?
@@ -132,38 +132,38 @@ license_check_paths = [
 ].freeze
 license_package_ecosystems = %w[bundler cargo npm pip].freeze
 stale_issues_and_prs_workflow_yaml = ".github/workflows/stale-issues-and-prs.yml"
-codeql_extensions_homebrew_actions_yml = ".github/codeql/extensions/homebrew-actions.yml"
+codeql_extensions_gooberbrew_actions_yml = ".github/codeql/extensions/gooberbrew-actions.yml"
 shared_jekyll_paths = %w[
   bin/jekyll
   script/bootstrap
 ].freeze
 brewsh_assets_url = "https://brew.sh"
 
-homebrew_docs = homebrew_repository_path/docs
-homebrew_ruby_version =
-  (homebrew_repository_path/"Library/Homebrew/vendor/portable-ruby-version").read
+gooberbrew_docs = gooberbrew_repository_path/docs
+gooberbrew_ruby_version =
+  (gooberbrew_repository_path/"Library/Gooberbrew/vendor/portable-ruby-version").read
   .chomp
   .sub(/_\d+$/, "")
-homebrew_gemfile = (homebrew_repository_path/"Library/Homebrew/Gemfile")
-homebrew_gemfile_lock = (homebrew_repository_path/"Library/Homebrew/Gemfile.lock")
-homebrew_rubocop_config_yaml = YAML.load_file(
-  homebrew_repository_path/"Library/#{rubocop_yaml}",
+gooberbrew_gemfile = (gooberbrew_repository_path/"Library/Gooberbrew/Gemfile")
+gooberbrew_gemfile_lock = (gooberbrew_repository_path/"Library/Gooberbrew/Gemfile.lock")
+gooberbrew_rubocop_config_yaml = YAML.load_file(
+  gooberbrew_repository_path/"Library/#{rubocop_yaml}",
   permitted_classes: [Symbol, Regexp],
 )
-homebrew_rubocop_config_yaml["AllCops"]["Exclude"] << "**/vendor/**/*"
-homebrew_rubocop_config = homebrew_rubocop_config_yaml.reject do |key, _|
-  key.match?(%r{\Arequire|plugins|inherit_from|inherit_mode|Cask/|Formula|Homebrew|Performance/|RSpec|Sorbet/})
+gooberbrew_rubocop_config_yaml["AllCops"]["Exclude"] << "**/vendor/**/*"
+gooberbrew_rubocop_config = gooberbrew_rubocop_config_yaml.reject do |key, _|
+  key.match?(%r{\Arequire|plugins|inherit_from|inherit_mode|Cask/|Formula|Gooberbrew|Performance/|RSpec|Sorbet/})
 end.to_yaml
-homebrew_docs_rubocop_config_yaml = YAML.load_file(
-  homebrew_repository_path/"docs/#{rubocop_yaml}",
+gooberbrew_docs_rubocop_config_yaml = YAML.load_file(
+  gooberbrew_repository_path/"docs/#{rubocop_yaml}",
   permitted_classes: [Symbol, Regexp],
 )
-homebrew_docs_rubocop_config = homebrew_docs_rubocop_config_yaml.reject do |key, _|
+gooberbrew_docs_rubocop_config = gooberbrew_docs_rubocop_config_yaml.reject do |key, _|
   key.match?(%r{\AFormulaAudit/|Sorbet/})
 end.to_yaml
    .sub('inherit_from: "../Library/.rubocop.yml"', 'inherit_from: "../.rubocop.yml"')
-homebrew_docs_workflow_yaml = homebrew_repository_path/docs_workflow_yaml
-homebrew_vale_ini = homebrew_repository_path/vale_ini
+gooberebrew_docs_workflow_yaml = gooberbrew_repository_path/docs_workflow_yaml
+gooberbrew_vale_ini = gooberbrew_repository_path/vale_ini
 
 target_gemfile_locks = []
 dependabot_config_yaml = YAML.load_file(dependabot_template_yaml)
@@ -234,13 +234,13 @@ custom_rubocop_repos = %w[
   ruby-macho
 ].freeze
 # These repositories don't get the synced CodeRabbit configuration or CODEOWNERS.
-# brew is excluded for now and homebrew-core and homebrew-cask permanently.
+# brew is excluded for now and gooberbrew-core and gooberbrew-cask permanently.
 # .github is excluded because it can sync changes to other repositories.
 # private owns a Security Team-reviewed approval policy and tests the shared CODEOWNERS entries itself.
 coderabbit_excluded_repositories = %w[
   brew
-  homebrew-core
-  homebrew-cask
+  gooberbrew-core
+  gooberbrew-cask
   private
   .github
 ].freeze
@@ -251,8 +251,8 @@ coderabbit_auto_approve_authors = {
 template_check_repositories = %w[
   BrewUI
   brew
-  homebrew-core
-  homebrew-cask
+  gooberbrew-core
+  gooberbrew-cask
 ].freeze
 rejected_docs_basenames = %w[
   _config.yml
@@ -301,7 +301,7 @@ puts "Detecting changes…"
   actionlint_workflow_yaml,
   *check_workflow_yamls,
   stale_issues_and_prs_workflow_yaml,
-  codeql_extensions_homebrew_actions_yml,
+  codeql_extensions_gooberbrew_actions_yml,
 ].each do |path|
   target_path = target_directory_path/path
   target_path.dirname.mkpath
@@ -323,7 +323,7 @@ puts "Detecting changes…"
 
       private_repository_path/docs
     else
-      homebrew_docs
+      gooberbrew_docs
     end
 
     next if path == target_path.to_s
@@ -359,8 +359,8 @@ puts "Detecting changes…"
       elsif docs_path_basename == ".rubocop.yml"
         FileUtils.rm_f target_docs_path
         target_docs_path.write(
-          "# This file is synced from `Homebrew/brew` by the `.github` repository, do not modify it directly.\n" \
-          "#{homebrew_docs_rubocop_config}\n",
+          "# This file is synced from `Gooberbrew/brew` by the `.github` repository, do not modify it directly.\n" \
+          "#{gooberbrew_docs_rubocop_config}\n",
         )
       elsif docs_path != target_docs_path
         FileUtils.rm_f target_docs_path if target_docs_path.symlink?
@@ -376,8 +376,8 @@ puts "Detecting changes…"
     next unless docs_path.directory?
 
     path = case path
-    when docs_workflow_yaml then homebrew_docs_workflow_yaml
-    when vale_ini           then homebrew_vale_ini
+    when docs_workflow_yaml then gooberbrew_docs_workflow_yaml
+    when vale_ini           then gooberbrew_vale_ini
     else raise "Unexpected path: #{path}"
     end
     next if path == target_path.to_s
@@ -385,34 +385,34 @@ puts "Detecting changes…"
     contents = keep_newer_action_pins(path.read, target_path)
     FileUtils.rm_f target_path
     target_path.write(
-      "# This file is synced from `Homebrew/brew` by the `.github` repository, do not modify it directly.\n" \
+      "# This file is synced from `Gooberbrew/brew` by the `.github` repository, do not modify it directly.\n" \
       "#{contents}\n",
     )
   when ruby_version
-    target_path = target_directory_path/"Library/Homebrew/#{ruby_version}" if repository_name == "brew"
+    target_path = target_directory_path/"Library/Gooberbrew/#{ruby_version}" if repository_name == "brew"
 
     if target_path.exist?
       target_ruby_version = target_path.read.chomp
 
       # Don't downgrade the Ruby version even if Portable Ruby was downgraded.
-      next if Gem::Version.new(homebrew_ruby_version) < Gem::Version.new(target_ruby_version)
+      next if Gem::Version.new(gooberbrew_ruby_version) < Gem::Version.new(target_ruby_version)
     end
 
-    target_path.write("#{homebrew_ruby_version}\n")
+    target_path.write("#{gooberbrew_ruby_version}\n")
   when "Gemfile"
     next if repository_name == "brew" || custom_ruby_version_repos.include?(repository_name)
     next unless target_path.file?
 
     contents = target_path.read
     updated_contents = contents.sub(/^ruby file: "\.ruby-version"$/) do
-      (homebrew_docs/"Gemfile").read.lines.grep(/\Aruby /).fetch(0).chomp
+      (gooberbrew_docs/"Gemfile").read.lines.grep(/\Aruby /).fetch(0).chomp
     end
     target_path.write(updated_contents) if contents != updated_contents
   when rubocop_yaml
     FileUtils.rm_f target_path
     target_path.write(
-      "# This file is synced from `Homebrew/brew` by the `.github` repository, do not modify it directly.\n" \
-      "#{homebrew_rubocop_config}\n",
+      "# This file is synced from `Gooberbrew/brew` by the `.github` repository, do not modify it directly.\n" \
+      "#{gooberbrew_rubocop_config}\n",
     )
   when coderabbit_config_ts
     next if coderabbit_excluded_repositories.include?(repository_name)
@@ -465,7 +465,7 @@ puts "Detecting changes…"
     target_path.write("#{codeowners_header}#{template_contents}")
   when dependabot_yaml, denied_licenses_txt, licenses_workflow_yaml, check_licenses_sh, actionlint_workflow_yaml,
        check_issues_workflow_yaml, check_prs_workflow_yaml, stale_issues_and_prs_workflow_yaml,
-       codeql_extensions_homebrew_actions_yml
+       codeql_extensions_gooberbrew_actions_yml
     contents = if path == dependabot_yaml
       dependabot_config
     else
@@ -512,7 +512,7 @@ puts "Detecting changes…"
     next if repository_name == ".github"
 
     # Install templates once and then leave them to the repository, like any template it already has.
-    contents = format(Pathname(template_sources.fetch(path)).read, repository: "Homebrew/#{repository_name}")
+    contents = format(Pathname(template_sources.fetch(path)).read, repository: "Gooberbrew/#{repository_name}")
     if path == pull_request_template
       own_templates = working_tree_files.grep(existing_pull_request_template) - [path]
       # GitHub prefers `.github/`, so remove an unedited synced template once the repository adds its own elsewhere.
@@ -631,9 +631,9 @@ if brewsh_repository_path && repository_name != "brew.sh"
 
       theme_path = "_includes/#{include_path}"
       # `exclude?` is not available in all Ruby contexts this script may run in.
-      # rubocop:disable Homebrew/NegateInclude
+      # rubocop:disable Gooberbrew/NegateInclude
       next if theme_paths.include?(theme_path) || !shared_theme_paths.include?(theme_path)
-      # rubocop:enable Homebrew/NegateInclude
+      # rubocop:enable Gooberbrew/NegateInclude
 
       theme_paths << theme_path
       required_includes.concat(
@@ -744,7 +744,7 @@ end
 
 # Update Gemfile.lock if it exists, based on the Bundler and Ruby versions.
 #
-# We don't need to sync non-docs Gemfiles in Homebrew/brew because they are the source of truth.
+# We don't need to sync non-docs Gemfiles in Gooberbrew/brew because they are the source of truth.
 target_gemfile_locks.each do |target_gemfile_lock|
   is_docs_lock = target_gemfile_lock.dirname.basename.to_s == docs
 
@@ -755,8 +755,8 @@ target_gemfile_locks.each do |target_gemfile_lock|
   Dir.chdir target_directory_path do
     require "bundler"
     bundler_version = Bundler::Definition.build(
-      homebrew_gemfile,
-      homebrew_gemfile_lock,
+      gooberbrew_gemfile,
+      gooberbrew_gemfile_lock,
       false,
     ).locked_gems.bundler_version
     ruby_args = custom_ruby_version_repos.include?(repository_name) ? [] : ["--ruby"]
