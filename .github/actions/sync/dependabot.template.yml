@@ -1,4 +1,4 @@
-# This file is used as a base for all repositories in the Homebrew GitHub
+# This file is used as a base for all repositories in the Gooberbrew GitHub
 # organisation so intentionally contains a superset of all required attributes.
 # Please keep / present for all ecosystems
 version: 2
@@ -8,7 +8,7 @@ updates:
     directories:
       - /
       - /docs
-      - /Library/Homebrew
+      - /Library/Gooberbrew
     schedule:
       interval: weekly
       day: "monday"
@@ -25,7 +25,7 @@ updates:
   - package-ecosystem: cargo
     directories:
       - /
-      - /Library/Homebrew/rust/brew-rs
+      - /Library/Gooberbrew/rust/brew-rs
     schedule:
       interval: weekly
       day: "monday"
@@ -86,7 +86,7 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - "Homebrew/actions/*"
+        - "Gooberbrew/actions/*"
 
   - package-ecosystem: npm
     directory: /
@@ -109,7 +109,7 @@ updates:
   - package-ecosystem: pip
     directories:
       - /
-      - /Library/Homebrew/formula-analytics/
+      - /Library/Gooberbrew/formula-analytics/
     schedule:
       interval: weekly
       day: "monday"
@@ -144,7 +144,7 @@ updates:
   - package-ecosystem: uv
     directories:
       - /
-      - /Library/Homebrew/formula-analytics/
+      - /Library/Gooberbrew/formula-analytics/
     schedule:
       interval: weekly
       day: "monday"
