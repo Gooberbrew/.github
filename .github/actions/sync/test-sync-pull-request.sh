@@ -5,7 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 export SYNC_TEST_LOG="$workdir/commands"
-export GH_REPO=Homebrew/brew JOB_INDEX=0
+export GH_REPO=Gooberbrew/brew JOB_INDEX=0
 mkdir -p "$workdir/bin" "$workdir/target/$GH_REPO"
 
 ruby -ryaml > "$workdir/sync.sh" <<'RUBY'
