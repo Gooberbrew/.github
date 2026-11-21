@@ -19,5 +19,5 @@ updates:
   cooldown:
     default-days: 7
     exclude:
-    - Homebrew/actions/*
+    - Gooberbrew/actions/*
 
