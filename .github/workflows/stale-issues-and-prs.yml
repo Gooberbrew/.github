@@ -24,7 +24,7 @@ concurrency:
 jobs:
   stale:
     if: >
-      github.repository_owner == 'Homebrew' && (
+      github.repository_owner == 'Gooberbrew' && (
         github.event_name != 'issue_comment' || (
           contains(github.event.issue.labels.*.name, 'stale') ||
           contains(github.event.pull_request.labels.*.name, 'stale')
@@ -54,7 +54,7 @@ jobs:
 
   bump-pr-stale:
     if: >
-      github.repository_owner == 'Homebrew' && (
+      github.repository_owner == 'Gooberbrew' && (
         github.event_name != 'issue_comment' || (
           contains(github.event.issue.labels.*.name, 'stale') ||
           contains(github.event.pull_request.labels.*.name, 'stale')
