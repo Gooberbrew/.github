@@ -25,7 +25,7 @@ permissions: {}
 jobs:
   brew_ruby:
     name: No brew ruby
-    if: github.repository_owner == 'Homebrew'
+    if: github.repository_owner == 'Gooberbrew'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,22 +41,22 @@ jobs:
             .github ':(glob)**/action.yml' ':(glob)**/action.yaml' ':!.github/workflows/actionlint.yml' || status=$?
           if [[ "${status}" -eq 0 ]]
           then
-            echo "::error::Use a dedicated brew command or Homebrew/actions/setup-ruby instead of \`brew ruby\`."
+            echo "::error::Use a dedicated brew command or Gooberbrew/actions/setup-ruby instead of \`brew ruby\`."
             exit 1
           fi
           [[ "${status}" -eq 1 ]]
 
   workflow_syntax:
-    if: github.repository_owner == 'Homebrew'
+    if: github.repository_owner == 'Gooberbrew'
     runs-on: ubuntu-latest
     permissions:
       contents: read
     container:
-      image: ghcr.io/homebrew/brew:main
+      image: ghcr.io/gooberbrew/brew:main
     steps:
-      - name: Set up Homebrew
-        id: setup-homebrew
-        uses: Homebrew/actions/setup-homebrew@ceec4e8419bb3c97ce96e9dda7738499ed5f869d # 2026.11.14.1
+      - name: Set up Gooberbrew
+        id: setup-gooberbrew
+        uses: Gooberbrew/actions/setup-gooberbrew@ceec4e8419bb3c97ce96e9dda7738499ed5f869d # 2026.11.14.1
         with:
           core: false
           cask: false
@@ -82,11 +82,11 @@ jobs:
 
       - name: Set up actionlint
         run: |
-          # In homebrew-core, setting `shell: /bin/bash` prevents shellcheck from running on
+          # In gooberbrew-core, setting `shell: /bin/bash` prevents shellcheck from running on
           # those steps, so let's change them to `shell: bash` temporarily for better linting.
           sed -i 's|shell: /bin/bash -x|shell: bash -x|' .github/workflows/*.y*ml
 
-          # In homebrew-core, the JSON matcher needs to be accessible to the container host.
+          # In gooberbrew-core, the JSON matcher needs to be accessible to the container host.
           cp "$(brew --repository)/.github/actionlint-matcher.json" "$HOME"
 
           echo "::add-matcher::$HOME/actionlint-matcher.json"
