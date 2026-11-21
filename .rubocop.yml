@@ -1,4 +1,4 @@
-# This file is synced from `Homebrew/brew` by the `.github` repository, do not modify it directly.
+# This file is synced from `Gooberbrew/brew` by the `.github` repository, do not modify it directly.
 ---
 AllCops:
   TargetRubyVersion: 4.0
@@ -7,10 +7,10 @@ AllCops:
   Include:
   - "**/*.rbi"
   Exclude:
-  - Homebrew/sorbet/rbi/{annotations,dsl,gems}/**/*.rbi
-  - Homebrew/sorbet/rbi/parser*.rbi
-  - Homebrew/bin/*
-  - Homebrew/vendor/**/*
+  - Gooberbrew/sorbet/rbi/{annotations,dsl,gems}/**/*.rbi
+  - Gooberbrew/sorbet/rbi/parser*.rbi
+  - Gooberbrew/bin/*
+  - Gooberbrew/vendor/**/*
   - Taps/*/*/vendor/**/*
   - "**/.github/copilot-instructions.md"
   - "**/vendor/**/*"
@@ -69,7 +69,7 @@ Layout/SpaceBeforeBrackets:
   - "**/{Formula,Casks}/**/*.rb"
 Style/CommandLiteral:
   Exclude:
-  - Homebrew/**/*.rb
+  - Gooberbrew/**/*.rb
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 Lint/ArgumentMismatch:
@@ -189,7 +189,7 @@ Style/FrozenStringLiteralComment:
   - Taps/*/*/*.rb
   - "/**/{Formula,Casks}/**/*.rb"
   - "**/{Formula,Casks}/**/*.rb"
-  - Homebrew/test/**/Casks/**/*.rb
+  - Gooberbrew/test/**/Casks/**/*.rb
   - "**/*.rbi"
   - "**/Brewfile"
 Style/GuardClause:
